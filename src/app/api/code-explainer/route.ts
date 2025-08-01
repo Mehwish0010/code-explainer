@@ -53,11 +53,16 @@ ${code}
     return NextResponse.json({
       explanation: content,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("API ERROR:", error);
 
+    const errorMessage =
+      typeof error === "object" && error !== null && "message" in error
+        ? (error as { message: string }).message
+        : "Unknown error";
+
     return NextResponse.json(
-      { error: error?.message || "Unknown error" },
+      { error: errorMessage },
       { status: 500 }
     );
   }

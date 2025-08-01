@@ -27,7 +27,7 @@ export default function CodeExplainer() {
       })
 
       const text = await res.text()
-      let data: any
+      let data: { explanation?: string; error?: string }
       try {
         data = JSON.parse(text)
       } catch {
@@ -41,7 +41,7 @@ export default function CodeExplainer() {
       }
 
       setResult(data.explanation || "Something went wrong.")
-    } catch (error) {
+    } catch {
       setResult("Network error occurred")
     } finally {
       setIsAnalyzing(false)
@@ -67,8 +67,12 @@ export default function CodeExplainer() {
       const data = await res.json()
       const output = data.run?.output || data.message || "No output."
       setRunOutput(output)
-    } catch (err: any) {
-      setRunOutput("Failed to run code: " + err.message)
+    } catch (err) {
+      let message = "Failed to run code."
+      if (err instanceof Error) {
+        message += " " + err.message
+      }
+      setRunOutput(message)
     } finally {
       setIsRunning(false)
     }
